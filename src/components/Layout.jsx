@@ -12,7 +12,7 @@ export default function Layout() {
       <header className="site-header">
         <Link className="brand" to="/" onClick={close}>
           <img src="/images/logo.png" alt="JD2 Meditech" />
-          <span>JD2 Meditech</span>
+         
         </Link>
         <button className="icon-button mobile-only" onClick={() => setOpen(!open)} aria-label="Toggle menu">
           {open ? <X /> : <Menu />}
