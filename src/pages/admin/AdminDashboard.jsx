@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { categories } from "../../data/fallback";
+import { categories, fallbackProducts } from "../../data/fallback";
 import { api, assetUrl } from "../../services/api";
 
 const blankProduct = {
@@ -55,6 +55,7 @@ const menuItems = [
 ];
 
 export default function AdminDashboard() {
+  const [demoMode, setDemoMode] = useState(localStorage.getItem("jd2_admin_demo") === "true");
   const [activePanel, setActivePanel] = useState("overview");
   const [products, setProducts] = useState([]);
   const [quotes, setQuotes] = useState([]);
@@ -75,6 +76,57 @@ export default function AdminDashboard() {
   }, [products]);
 
   const load = async () => {
+    if (localStorage.getItem("jd2_admin_demo") === "true") {
+      setDemoMode(true);
+      setProducts(fallbackProducts.map((product) => ({
+        ...product,
+        active: product.active ?? true,
+        specifications: product.specifications || []
+      })));
+      setQuotes([
+        {
+          id: 1,
+          organization: "City Care Hospital",
+          contactName: "Demo Buyer",
+          email: "purchase@example.com",
+          phone: "+91 90000 00000",
+          productCategory: "ventilators",
+          requirements: "Need ICU ventilator pricing and delivery timeline for a demo discussion.",
+          status: "new"
+        }
+      ]);
+      setEnquiries([
+        {
+          id: 1,
+          name: "Dr. Mehta",
+          email: "doctor@example.com",
+          phone: "+91 98888 88888",
+          subject: "Orthopedic implant catalogue",
+          message: "Please share available implant categories and quotation process.",
+          status: "new"
+        }
+      ]);
+      setContent([
+        {
+          id: 1,
+          page: "home",
+          section: "hero",
+          eyebrow: "Medical equipment",
+          title: "JD2 Meditech Pvt. Ltd.",
+          body: "Demo website content record for client walkthrough.",
+          active: true,
+          sortOrder: 0
+        }
+      ]);
+      setMedia(fallbackProducts.slice(0, 6).map((product) => ({
+        id: product.id,
+        title: product.name,
+        url: product.imageUrl,
+        altText: product.name
+      })));
+      return;
+    }
+
     const [p, q, e, c, m] = await Promise.all([
       api.get("/admin/products"),
       api.get("/admin/quotes"),
@@ -112,6 +164,14 @@ export default function AdminDashboard() {
       ...productForm,
       slug: productForm.slug || productForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
     };
+    if (demoMode) {
+      setProducts((current) => {
+        if (payload.id) return current.map((item) => item.id === payload.id ? payload : item);
+        return [{ ...payload, id: Date.now() }, ...current];
+      });
+      resetProductForm();
+      return;
+    }
     if (productForm.id) await api.put(`/admin/products/${productForm.id}`, payload);
     else await api.post("/admin/products", payload);
     resetProductForm();
@@ -120,6 +180,12 @@ export default function AdminDashboard() {
 
   async function deleteProduct(product) {
     if (!window.confirm(`Delete ${product.name}?`)) return;
+    if (demoMode) {
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+      if (productForm.id === product.id) resetProductForm();
+      if (viewProduct?.id === product.id) setViewProduct(null);
+      return;
+    }
     await api.delete(`/admin/products/${product.id}`);
     if (productForm.id === product.id) resetProductForm();
     if (viewProduct?.id === product.id) setViewProduct(null);
@@ -129,6 +195,15 @@ export default function AdminDashboard() {
   async function uploadImage(event, target = "product") {
     const file = event.target.files[0];
     if (!file) return;
+    if (demoMode) {
+      const url = URL.createObjectURL(file);
+      const item = { id: Date.now(), title: file.name, url, altText: file.name };
+      setMedia((current) => [item, ...current]);
+      if (target === "content") setContentForm((current) => ({ ...current, imageUrl: url }));
+      else setProductForm((current) => ({ ...current, imageUrl: url }));
+      event.target.value = "";
+      return;
+    }
     const data = new FormData();
     data.append("image", file);
     data.append("title", file.name);
@@ -146,6 +221,14 @@ export default function AdminDashboard() {
 
   async function saveContent(event) {
     event.preventDefault();
+    if (demoMode) {
+      setContent((current) => {
+        if (contentForm.id) return current.map((item) => item.id === contentForm.id ? contentForm : item);
+        return [{ ...contentForm, id: Date.now() }, ...current];
+      });
+      setContentForm(blankContent);
+      return;
+    }
     if (contentForm.id) await api.put(`/admin/content/${contentForm.id}`, contentForm);
     else await api.post("/admin/content", contentForm);
     setContentForm(blankContent);
@@ -154,12 +237,25 @@ export default function AdminDashboard() {
 
   async function deleteContent(item) {
     if (!window.confirm(`Delete ${item.page} / ${item.section}?`)) return;
+    if (demoMode) {
+      setContent((current) => current.filter((record) => record.id !== item.id));
+      if (contentForm.id === item.id) setContentForm(blankContent);
+      return;
+    }
     await api.delete(`/admin/content/${item.id}`);
     if (contentForm.id === item.id) setContentForm(blankContent);
     await load();
   }
 
   async function respond(kind, item, response) {
+    if (demoMode) {
+      const updater = (current) => current.map((record) => (
+        record.id === item.id ? { ...record, response, status: "responded" } : record
+      ));
+      if (kind === "quote") setQuotes(updater);
+      else setEnquiries(updater);
+      return;
+    }
     const path = kind === "quote" ? "quotes" : "enquiries";
     await api.put(`/admin/${path}/${item.id}`, { ...item, response, status: "responded" });
     await load();
@@ -167,6 +263,7 @@ export default function AdminDashboard() {
 
   function logout() {
     localStorage.removeItem("jd2_admin_token");
+    localStorage.removeItem("jd2_admin_demo");
     navigate("/admin");
   }
 
@@ -191,7 +288,7 @@ export default function AdminDashboard() {
       <section className="admin-main">
         <div className="admin-head">
           <h1>Admin Dashboard</h1>
-          <p>Manage products, category tables, uploads, website copy, quote requests, and enquiries.</p>
+          <p>{demoMode ? "Demo mode with local sample data for client walkthrough." : "Manage products, category tables, uploads, website copy, quote requests, and enquiries."}</p>
         </div>
 
         {activePanel === "overview" && (
