@@ -1,5 +1,5 @@
 import { Facebook, Globe2, Heart, Instagram, Mail, Menu, Phone, Search, ShoppingBag, UserRound, X, ChevronDown, Youtube } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { categories, fallbackProducts } from "../data/fallback";
 import { productAnchor } from "./ProductGrid.jsx";
@@ -10,7 +10,6 @@ export default function Layout() {
   const [products, setProducts] = useState(fallbackProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef(null);
   const close = () => {
     setOpen(false);
     setSearchOpen(false);
@@ -25,7 +24,7 @@ export default function Layout() {
   useEffect(() => {
     const closeSearch = (event) => {
       if (event.key === "Escape") setSearchOpen(false);
-      if (event.type === "mousedown" && searchRef.current && !searchRef.current.contains(event.target)) {
+      if (event.type === "mousedown" && !event.target.closest(".site-search")) {
         setSearchOpen(false);
       }
     };
@@ -54,6 +53,46 @@ export default function Layout() {
       .slice(0, 6);
   }, [products, searchTerm]);
 
+  const renderSearchBox = () => (
+    <div className="site-search">
+      <Search size={16} />
+      <input
+        aria-label="Search products"
+        placeholder="Search here..."
+        value={searchTerm}
+        onChange={(event) => {
+          setSearchTerm(event.target.value);
+          setSearchOpen(true);
+        }}
+        onFocus={() => setSearchOpen(true)}
+      />
+      {searchOpen && searchTerm.trim().length >= 2 && (
+        <div className="search-results-panel">
+          {searchResults.length ? searchResults.map((product) => {
+            const category = categories.find((item) => item.key === product.category);
+            return (
+              <Link
+                className="search-result-card"
+                key={product.id || product.slug || product.name}
+                to={`/products/${product.category}#${productAnchor(product)}`}
+                onClick={() => {
+                  setSearchTerm("");
+                  close();
+                }}
+              >
+                <img src={assetUrl(product.imageUrl)} alt={product.name} />
+                <span>{category?.label || product.category}</span>
+                <strong>{product.name}</strong>
+              </Link>
+            );
+          }) : (
+            <div className="search-empty">No matching products</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       <header className="site-header">
@@ -61,6 +100,7 @@ export default function Layout() {
           <img src="/images/logo.png" alt="JD2 Meditech" />
          
         </Link>
+        <div className="mobile-search-wrap">{renderSearchBox()}</div>
         <button className="icon-button mobile-only" onClick={() => setOpen(!open)} aria-label="Toggle menu">
           {open ? <X /> : <Menu />}
         </button>
@@ -79,43 +119,7 @@ export default function Layout() {
           <NavLink to="/admin" onClick={close}>Admin</NavLink>
         </nav>
         <div className="nav-tools">
-          <div className="site-search" ref={searchRef}>
-            <Search size={16} />
-            <input
-              aria-label="Search products"
-              placeholder="Search here..."
-              value={searchTerm}
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                setSearchOpen(true);
-              }}
-              onFocus={() => setSearchOpen(true)}
-            />
-            {searchOpen && searchTerm.trim().length >= 2 && (
-              <div className="search-results-panel">
-                {searchResults.length ? searchResults.map((product) => {
-                  const category = categories.find((item) => item.key === product.category);
-                  return (
-                    <Link
-                      className="search-result-card"
-                      key={product.id || product.slug || product.name}
-                      to={`/products/${product.category}#${productAnchor(product)}`}
-                      onClick={() => {
-                        setSearchTerm("");
-                        close();
-                      }}
-                    >
-                      <img src={assetUrl(product.imageUrl)} alt={product.name} />
-                      <span>{category?.label || product.category}</span>
-                      <strong>{product.name}</strong>
-                    </Link>
-                  );
-                }) : (
-                  <div className="search-empty">No matching products</div>
-                )}
-              </div>
-            )}
-          </div>
+          {renderSearchBox()}
           <Link className="tool-button" to="/quote" aria-label="Saved products"><Heart size={18} /></Link>
           <Link className="tool-button" to="/products/ventilators" aria-label="Shop products"><ShoppingBag size={18} /></Link>
           <Link className="tool-button" to="/admin" aria-label="Admin login"><UserRound size={18} /></Link>
