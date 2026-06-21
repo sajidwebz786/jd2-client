@@ -1,4 +1,4 @@
-import { ArrowRight, Award, Facebook, Headphones, HeartPulse, Hospital, Instagram, ShieldCheck, Stethoscope, Truck, Youtube } from "lucide-react";
+import { ArrowRight, Award, Headphones, HeartPulse, Hospital, ShieldCheck, Stethoscope, Truck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductGrid from "../components/ProductGrid.jsx";
@@ -29,12 +29,6 @@ export default function Home() {
           <div className="actions">
             <Link className="button primary" to={hero.ctaUrl || "/quote"}>{hero.ctaLabel || "Request Quote"} <ArrowRight size={18} /></Link>
             <Link className="button ghost" to="/products/ortho-implants">Shop Products</Link>
-          </div>
-          <div className="social-row">
-            <span>Follow</span>
-            <Facebook size={17} />
-            <Instagram size={17} />
-            <Youtube size={18} />
           </div>
         </div>
         <div className="hero-stage">

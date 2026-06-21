@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ProductGrid from "../components/ProductGrid.jsx";
 import { categories, fallbackProducts } from "../data/fallback";
 import { api } from "../services/api";
 
 export default function Products() {
   const { category } = useParams();
+  const location = useLocation();
   const label = categories.find((item) => item.key === category)?.label || "Products";
   const [products, setProducts] = useState(fallbackProducts.filter((item) => item.category === category));
 
@@ -14,6 +15,17 @@ export default function Products() {
       .then((res) => setProducts(res.data.length ? res.data : fallbackProducts.filter((item) => item.category === category)))
       .catch(() => setProducts(fallbackProducts.filter((item) => item.category === category)));
   }, [category]);
+
+  useEffect(() => {
+    if (!location.hash || !products.length) return;
+    const target = document.querySelector(location.hash);
+    if (!target) return;
+    window.setTimeout(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.add("product-card-target");
+      window.setTimeout(() => target.classList.remove("product-card-target"), 1800);
+    }, 120);
+  }, [location.hash, products]);
 
   return (
     <main>

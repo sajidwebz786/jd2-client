@@ -37,8 +37,43 @@ p { line-height: 1.65; }
 .dropdown-panel a { padding: 9px 10px; border-radius: 10px; }
 .dropdown-panel a:hover { background: var(--mint); }
 .nav-tools { display: flex; align-items: center; gap: 10px; }
-.site-search { width: min(220px, 18vw); min-height: 38px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; color: var(--muted); background: white; }
+.site-search { position: relative; width: min(220px, 18vw); min-height: 38px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; color: var(--muted); background: white; }
 .site-search input { min-width: 0; width: 100%; border: 0; outline: 0; font-size: 13px; color: var(--ink); }
+.search-results-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 40;
+  width: min(520px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+.search-result-card {
+  display: grid !important;
+  grid-template-columns: 58px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  min-height: 76px;
+  margin-top: 0 !important;
+  padding: 9px;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
+  color: var(--ink) !important;
+  background: #f8fdff;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.search-result-card:hover { border-color: rgba(41,184,242,.55); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(24,34,50,.08); }
+.search-result-card img { grid-row: 1 / 3; width: 58px; height: 58px; object-fit: contain; padding: 6px; border-radius: 8px; background: white; }
+.search-result-card span { color: var(--primary); font-size: 11px; font-weight: 900; text-transform: uppercase; }
+.search-result-card strong { min-width: 0; color: var(--ink); font-size: 13px; line-height: 1.25; }
+.search-empty { grid-column: 1 / -1; padding: 14px; color: var(--muted); font-size: 13px; text-align: center; }
 .tool-button { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 50%; color: var(--ink); transition: background .2s ease, color .2s ease, transform .2s ease; }
 .tool-button:hover { background: var(--mint); color: var(--primary-dark); transform: translateY(-1px); }
 .mobile-only { display: none; }
@@ -77,6 +112,7 @@ p { line-height: 1.65; }
 .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .product-card { background: white; border: 1px solid #edf0f4; border-radius: 14px; overflow: hidden; box-shadow: 0 14px 34px rgba(24,34,50,.07); transition: transform .25s ease, box-shadow .25s ease; }
 .product-card:hover { transform: translateY(-7px); box-shadow: 0 22px 46px rgba(24,34,50,.12); }
+.product-card-target { outline: 3px solid rgba(255, 122, 61, .55); outline-offset: 4px; box-shadow: 0 24px 50px rgba(255,122,61,.16); }
 .product-image-wrap { height: 220px; display: grid; place-items: center; margin: 12px; border-radius: 12px; background: linear-gradient(135deg, #f8fdff, #eaf9ff); }
 .product-card img { width: 86%; height: 190px; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(28, 66, 99, .12)); }
 .product-card div:not(.product-image-wrap) { padding: 6px 20px 20px; }
@@ -127,10 +163,200 @@ p { line-height: 1.65; }
 textarea { min-height: 104px; resize: vertical; }
 small { color: var(--primary); font-weight: 800; }
 
-.footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; padding: 34px 6vw; background: var(--ink); color: white; }
+.footer { display: grid; grid-template-columns: 1.35fr .8fr .8fr 1fr; gap: 30px; padding: 34px 6vw; background: var(--ink); color: white; }
 .footer img { height: 38px; filter: brightness(0) invert(1); margin-bottom: 12px; }
 .footer p { color: rgba(255,255,255,.72); line-height: 1.7; }
 .footer a { display: block; margin-top: 8px; color: rgba(255,255,255,.78); }
+.footer-contact { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0 0; line-height: 1.45 !important; overflow-wrap: anywhere; }
+.footer-contact svg { flex: 0 0 auto; margin-top: 3px; color: var(--primary); }
+.footer-social { display: flex; align-items: center; gap: 14px; margin-top: 16px; color: rgba(255,255,255,.9); }
+.footer-social span { color: var(--accent); font-size: 12px; font-weight: 950; text-transform: uppercase; }
+.footer-social a { display: inline-grid; place-items: center; margin-top: 0; color: white; transition: color .2s ease, transform .2s ease; }
+.footer-social a:hover { color: var(--primary); transform: translateY(-1px); }
+
+.implant-page { background: linear-gradient(180deg, #f3fbff 0%, #ffffff 42%, #f7fcff 100%); }
+.implant-poster {
+  position: relative;
+  width: min(1180px, calc(100vw - 32px));
+  margin: 34px auto 0;
+  padding: 34px 30px 108px;
+  overflow: hidden;
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(41,184,242,.13), transparent 29%),
+    linear-gradient(180deg, #fbfdff 0%, #ffffff 56%, #f4fbff 100%);
+  box-shadow: 0 24px 60px rgba(18, 33, 73, .15);
+}
+.implant-title-block { position: relative; z-index: 1; text-align: center; padding: 6px 0 16px; }
+.implant-title-block h1 {
+  margin: 0;
+  color: #0a2770;
+  font-size: clamp(28px, 3.6vw, 42px);
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.implant-mark { display: inline-flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; color: #0a2770; font-weight: 900; text-transform: uppercase; }
+.implant-mark img { height: 58px; width: auto; }
+.implant-diagram {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(240px, .86fr) minmax(260px, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding: 8px 0 26px;
+}
+.implant-column { display: grid; gap: 18px; }
+.implant-panel {
+  min-height: 152px;
+  border: 1px solid #b9c3cf;
+  border-radius: 8px;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 12px 26px rgba(18, 33, 73, .06);
+}
+.implant-panel h2 {
+  margin: 0;
+  padding: 10px 12px 4px;
+  color: #17205f;
+  font-size: clamp(18px, 2vw, 25px);
+  font-weight: 950;
+  text-align: center;
+  text-transform: uppercase;
+}
+.implant-panel-body { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; padding: 8px 12px 14px; }
+.implant-panel img {
+  width: 92px;
+  height: 78px;
+  object-fit: contain;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f7fbff;
+  filter: contrast(1.04) drop-shadow(0 8px 12px rgba(10, 39, 112, .14));
+}
+.implant-panel ul { margin: 0; padding-left: 18px; color: #344052; font-size: 13px; line-height: 1.45; }
+.implant-center { display: grid; justify-items: center; gap: 14px; }
+.anatomy-figure {
+  position: relative;
+  width: min(250px, 100%);
+  height: 540px;
+  border-radius: 130px 130px 28px 28px;
+  background: linear-gradient(180deg, rgba(238, 248, 255, .82), rgba(255,255,255,.62));
+  box-shadow: inset 0 0 0 1px rgba(10, 39, 112, .08), 0 18px 34px rgba(18, 33, 73, .08);
+}
+.bone { position: absolute; display: block; background: #cbb28e; border: 1px solid rgba(101, 82, 59, .24); box-shadow: inset 0 0 8px rgba(255,255,255,.45); }
+.skull { left: 50%; top: 22px; width: 68px; height: 78px; transform: translateX(-50%); border-radius: 44% 44% 48% 48%; }
+.skull::before, .skull::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  width: 11px;
+  height: 13px;
+  border-radius: 50%;
+  background: #3d342b;
+}
+.skull::before { left: 17px; }
+.skull::after { right: 17px; }
+.neck { left: 50%; top: 98px; width: 22px; height: 34px; transform: translateX(-50%); border-radius: 12px; }
+.spine { left: 50%; top: 126px; width: 22px; height: 196px; transform: translateX(-50%); border-radius: 14px; }
+.rib {
+  top: 140px;
+  width: 82px;
+  height: 14px;
+  background: transparent;
+  border-top: 5px solid #cbb28e;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  box-shadow: none;
+}
+.left-rib { left: 40px; border-radius: 100% 0 0 0; transform: rotate(13deg); }
+.right-rib { right: 40px; border-radius: 0 100% 0 0; transform: rotate(-13deg); }
+.rib-two { top: 170px; width: 92px; }
+.rib-three { top: 202px; width: 82px; }
+.pelvis { left: 50%; top: 302px; width: 112px; height: 60px; transform: translateX(-50%); border-radius: 18px 18px 46px 46px; background: transparent; border: 8px solid #cbb28e; border-top-width: 5px; }
+.arm { top: 142px; width: 15px; height: 142px; border-radius: 12px; }
+.left-arm { left: 30px; transform: rotate(13deg); }
+.right-arm { right: 30px; transform: rotate(-13deg); }
+.forearm { top: 270px; width: 13px; height: 108px; border-radius: 12px; }
+.left-forearm { left: 16px; transform: rotate(-8deg); }
+.right-forearm { right: 16px; transform: rotate(8deg); }
+.leg { top: 356px; width: 18px; height: 108px; border-radius: 14px; }
+.left-leg { left: 93px; transform: rotate(5deg); }
+.right-leg { right: 93px; transform: rotate(-5deg); }
+.shin { top: 456px; width: 15px; height: 72px; border-radius: 14px; }
+.left-shin { left: 89px; transform: rotate(-4deg); }
+.right-shin { right: 89px; transform: rotate(4deg); }
+.joint { width: 25px; height: 25px; border-radius: 50%; background: #d7c2a0; }
+.left-shoulder { left: 48px; top: 128px; }
+.right-shoulder { right: 48px; top: 128px; }
+.left-hip { left: 84px; top: 342px; }
+.right-hip { right: 84px; top: 342px; }
+.left-knee { left: 85px; top: 446px; }
+.right-knee { right: 85px; top: 446px; }
+.implant-center-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 280px;
+  color: #0a2770;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+.implant-contact-strip {
+  position: absolute;
+  left: 34px;
+  bottom: 22px;
+  z-index: 2;
+  display: grid;
+  gap: 6px;
+  color: #101a63;
+  font-weight: 900;
+}
+.implant-contact-strip p { display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1.2; }
+.implant-detail-section {
+  display: grid;
+  grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr);
+  gap: 38px;
+  align-items: center;
+  padding: 70px 6vw;
+}
+.implant-showcase-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: white;
+  box-shadow: var(--shadow);
+}
+.implant-showcase-card div {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-height: 138px;
+  padding: 12px;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
+  background: #f8fdff;
+}
+.implant-showcase-card img { width: 100%; height: 86px; object-fit: contain; mix-blend-mode: multiply; }
+.implant-showcase-card strong { color: #17205f; font-size: 12px; text-align: center; text-transform: uppercase; }
+.implant-detail-copy span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.implant-detail-copy h2 { margin: 8px 0 10px; font-size: clamp(28px, 3vw, 42px); }
+.implant-detail-copy p { color: var(--muted); }
+.implant-checks { display: grid; gap: 8px; margin: 18px 0 22px; }
+.implant-checks p { display: flex; gap: 10px; align-items: flex-start; margin: 0; color: #344052; }
+.implant-checks svg { flex: 0 0 auto; color: var(--primary-dark); margin-top: 3px; }
 
 .admin-login { min-height: 100vh; display: grid; place-items: center; background: var(--soft); padding: 24px; }
 .admin-login .panel-form { width: min(440px, 100%); }
@@ -237,4 +463,17 @@ small { color: var(--primary); font-weight: 800; }
   .page-hero p { font-size: 14px; }
   .admin-form { grid-template-columns: 1fr; }
   .admin-sidebar { position: static; height: auto; }
+  .implant-poster { width: calc(100vw - 24px); margin-top: 20px; padding: 28px 14px 118px; }
+  .implant-title-block { padding-top: 8px; }
+  .implant-mark { gap: 8px; font-size: 12px; }
+  .implant-mark img { height: 44px; }
+  .implant-diagram { grid-template-columns: 1fr; gap: 14px; padding-bottom: 0; }
+  .implant-center { order: -1; }
+  .anatomy-figure { height: 360px; width: min(210px, 74vw); transform: scale(.82); margin: -34px 0; }
+  .implant-panel { min-height: 0; }
+  .implant-panel-body { grid-template-columns: 80px 1fr; padding: 8px 10px 12px; }
+  .implant-panel img { width: 80px; height: 68px; }
+  .implant-contact-strip { left: 18px; bottom: 24px; font-size: 13px; }
+  .implant-detail-section { grid-template-columns: 1fr; padding: 42px 6vw; }
+  .implant-showcase-card { grid-template-columns: 1fr; }
 }

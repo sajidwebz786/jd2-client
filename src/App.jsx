@@ -4,6 +4,7 @@ import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import Products from "./pages/Products.jsx";
+import ImplantSystem from "./pages/ImplantSystem.jsx";
 import Quote from "./pages/Quote.jsx";
 import Contact from "./pages/Contact.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
@@ -52,6 +53,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/implant-system" element={<ImplantSystem />} />
         <Route path="/products/:category" element={<Products />} />
         <Route path="/quote" element={<Quote />} />
         <Route path="/contact" element={<Contact />} />
