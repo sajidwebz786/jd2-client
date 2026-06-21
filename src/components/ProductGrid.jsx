@@ -7,7 +7,9 @@ export default function ProductGrid({ products }) {
     <div className="product-grid">
       {products.map((product) => (
         <article className="product-card" key={product.id || product.slug || product.name}>
-          <img src={assetUrl(product.imageUrl)} alt={product.name} />
+          <div className="product-image-wrap">
+            <img src={assetUrl(product.imageUrl)} alt={product.name} />
+          </div>
           <div>
             <span>{product.category?.replace("-", " ")}</span>
             <h3>{product.name}</h3>

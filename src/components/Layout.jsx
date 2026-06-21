@@ -1,4 +1,4 @@
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, UserRound, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { categories } from "../data/fallback";
@@ -12,6 +12,7 @@ export default function Layout() {
       <header className="site-header">
         <Link className="brand" to="/" onClick={close}>
           <img src="/images/logo.png" alt="JD2 Meditech" />
+          <span>JD2 Meditech</span>
         </Link>
         <button className="icon-button mobile-only" onClick={() => setOpen(!open)} aria-label="Toggle menu">
           {open ? <X /> : <Menu />}
@@ -29,6 +30,15 @@ export default function Layout() {
           <NavLink to="/contact" onClick={close}>Contact</NavLink>
           <NavLink to="/admin" onClick={close}>Admin</NavLink>
         </nav>
+        <div className="nav-tools">
+          <label className="site-search">
+            <Search size={16} />
+            <input placeholder="Search here..." />
+          </label>
+          <Link className="tool-button" to="/quote" aria-label="Saved products"><Heart size={18} /></Link>
+          <Link className="tool-button" to="/products/ventilators" aria-label="Shop products"><ShoppingBag size={18} /></Link>
+          <Link className="tool-button" to="/admin" aria-label="Admin login"><UserRound size={18} /></Link>
+        </div>
       </header>
       <Outlet />
       <footer className="footer">

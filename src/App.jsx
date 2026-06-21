@@ -15,8 +15,9 @@ export default function App() {
   useEffect(() => {
     const selector = [
       ".page-hero",
-      ".metrics div",
       ".section-heading",
+      ".category-tile",
+      ".deal-card",
       ".product-card",
       ".split-section > img",
       ".split-section > div",
