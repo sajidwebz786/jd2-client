@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProductGrid from "../components/ProductGrid.jsx";
 import { categories, fallbackProducts } from "../data/fallback";
 import { api } from "../services/api";
@@ -31,7 +32,16 @@ export default function Products() {
     <main>
       <section className="page-hero"><h1>{label}</h1><p>Database-backed catalogue with admin-editable products and images.</p></section>
       <section className="section">
-        <ProductGrid products={products} />
+        {products.length ? (
+          <ProductGrid products={products} />
+        ) : (
+          <div className="empty-catalogue">
+            <span>{label}</span>
+            <h2>Products will be added soon</h2>
+            <p>This category is ready in the portal. Add products from the admin panel and they will appear here automatically.</p>
+            <Link className="button primary" to="/quote">Request This Category</Link>
+          </div>
+        )}
       </section>
       {category === "ortho-implants" && (
         <section className="section tinted">

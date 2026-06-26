@@ -1,7 +1,7 @@
 import { Facebook, Globe2, Heart, Instagram, Mail, Menu, Phone, Search, ShoppingBag, UserRound, X, ChevronDown, Youtube } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { categories, fallbackProducts } from "../data/fallback";
+import { categories, fallbackProducts, megaMenuGroups } from "../data/fallback";
 import { productAnchor } from "./ProductGrid.jsx";
 import { api, assetUrl } from "../services/api";
 
@@ -95,6 +95,18 @@ export default function Layout() {
 
   return (
     <>
+      <div className="top-contact-bar">
+        <div>
+          <span><Phone size={14} /> +91 - 8849304101</span>
+          <span><Globe2 size={14} /> www.jd2meditech.com</span>
+          <span><Mail size={14} /> info@jd2meditech.com</span>
+        </div>
+        <div className="top-socials">
+          <a href="#" aria-label="Facebook"><Facebook size={14} /></a>
+          <a href="#" aria-label="Instagram"><Instagram size={14} /></a>
+          <a href="#" aria-label="YouTube"><Youtube size={15} /></a>
+        </div>
+      </div>
       <header className="site-header">
         <Link className="brand" to="/" onClick={close}>
           <img src="/images/logo.png" alt="JD2 Meditech" />
@@ -110,8 +122,27 @@ export default function Layout() {
           <NavLink to="/implant-system" onClick={close}>Implant System</NavLink>
           <div className="nav-dropdown">
             <span>Products <ChevronDown size={16} /></span>
-            <div className="dropdown-panel">
-              {categories.map((item) => <Link key={item.key} to={item.path} onClick={close}>{item.label}</Link>)}
+            <div className="dropdown-panel mega-menu">
+              <div className="mega-menu-intro">
+                <span>Product Portfolio</span>
+                <strong>Clinical equipment and implant systems</strong>
+                <p>Browse by speciality. Categories without listings are ready for admin-added products.</p>
+                <Link to="/quote" onClick={close}>Request catalogue</Link>
+              </div>
+              {megaMenuGroups.map((group) => (
+                <div className="mega-menu-group" key={group.key}>
+                  <Link className="mega-menu-title" to={`/products/${group.key}`} onClick={close}>{group.label}</Link>
+                  {group.items.map((item) => (
+                    <Link
+                      key={item}
+                      to={`/products/${group.key}#${item.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
+                      onClick={close}
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
           <NavLink to="/quote" onClick={close}>Request Quote</NavLink>
