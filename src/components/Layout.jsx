@@ -2,6 +2,7 @@ import { Award, ClipboardList, Facebook, Globe2, Instagram, Mail, Menu, Phone, S
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { categories as fallbackCategories, fallbackProducts } from "../data/fallback";
+import { services, servicePath } from "../data/services";
 import { productAnchor } from "./ProductGrid.jsx";
 import { api, assetUrl } from "../services/api";
 
@@ -129,24 +130,32 @@ export default function Layout() {
           <NavLink to="/" onClick={close}>Home</NavLink>
           <NavLink to="/about" onClick={close}>About</NavLink>
           <NavLink to="/implant-system" onClick={close}>Implant System</NavLink>
+          <div className="nav-dropdown services-dropdown">
+            <span className="nav-dropdown-label">Services <ChevronDown size={16} /></span>
+            <div className="dropdown-panel services-mega">
+              {services.map((service) => (
+                <Link className="service-menu-item" to={servicePath(service.key)} onClick={close} key={service.key}>
+                  <img src={assetUrl(service.imageUrl)} alt={service.title} />
+                  <span>
+                    <strong>{service.shortTitle}</strong>
+                    <small>{service.tagline}</small>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
           <div className="nav-dropdown">
             <Link className="nav-dropdown-label" to="/products" onClick={close}>Products <ChevronDown size={16} /></Link>
             <div className="dropdown-panel mega-menu">
-              <div className="mega-menu-intro">
-                <span>Product Portfolio</span>
-                <strong>Clinical equipment and implant systems</strong>
-                <p>Browse key product families for hospitals, clinics, and procurement teams.</p>
-                <Link to="/quote" onClick={close}>Request catalogue</Link>
-              </div>
               {categories.map((group) => {
                 const groupProducts = products.filter((product) => product.category === group.key).slice(0, 7);
                 return (
                 <div className="mega-menu-group" key={group.key}>
-                  <Link className="mega-menu-title" to={`/products/${group.key}`} onClick={close}>{group.label}</Link>
+                  <Link className="mega-menu-title" to={`/products?category=${group.key}`} onClick={close}>{group.label}</Link>
                   {groupProducts.length ? groupProducts.map((item) => (
                     <Link
                       key={item.id || item.slug || item.name}
-                      to={`/products/${group.key}#${productAnchor(item)}`}
+                      to={`/products?category=${group.key}#${productAnchor(item)}`}
                       onClick={close}
                     >
                       {item.name}

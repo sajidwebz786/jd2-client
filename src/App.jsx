@@ -8,6 +8,7 @@ import ImplantSystem from "./pages/ImplantSystem.jsx";
 import Quote from "./pages/Quote.jsx";
 import Contact from "./pages/Contact.jsx";
 import Certifications from "./pages/Certifications.jsx";
+import ServiceDetail from "./pages/ServiceDetail.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
@@ -68,6 +69,7 @@ export default function App() {
         <Route path="/products/:category/:slug" element={<Products />} />
         <Route path="/certifications.html" element={<Certifications />} />
         <Route path="/certifications" element={<Certifications />} />
+        <Route path="/services/:serviceKey" element={<ServiceDetail />} />
         <Route path="/quote" element={<Quote />} />
         <Route path="/contact" element={<Contact />} />
       </Route>

@@ -1,6 +1,6 @@
 import { CheckCircle2, ChevronRight, Minus, Plus, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import ProductGrid, { productAnchor, productSlug } from "../components/ProductGrid.jsx";
 import { assetUrl, api } from "../services/api";
 import { categories as fallbackCategories, fallbackProducts } from "../data/fallback";
@@ -26,8 +26,11 @@ function publicProductText(text = "") {
 export default function Products() {
   const { category, slug } = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const queryCategory = searchParams.get("category") || "";
+  const activeCategory = category || queryCategory;
   const [categories, setCategories] = useState(fallbackCategories);
-  const [products, setProducts] = useState(category ? fallbackProducts.filter((item) => item.category === category) : fallbackProducts);
+  const [products, setProducts] = useState(activeCategory ? fallbackProducts.filter((item) => item.category === activeCategory) : fallbackProducts);
 
   useEffect(() => {
     api.get("/categories")
@@ -36,14 +39,14 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    const endpoint = category ? `/products?category=${category}` : "/products";
+    const endpoint = activeCategory ? `/products?category=${activeCategory}` : "/products";
     api.get(endpoint)
       .then((res) => {
-        const fallback = category ? fallbackProducts.filter((item) => item.category === category) : fallbackProducts;
+        const fallback = activeCategory ? fallbackProducts.filter((item) => item.category === activeCategory) : fallbackProducts;
         setProducts(res.data.length ? res.data : fallback);
       })
-      .catch(() => setProducts(category ? fallbackProducts.filter((item) => item.category === category) : fallbackProducts));
-  }, [category]);
+      .catch(() => setProducts(activeCategory ? fallbackProducts.filter((item) => item.category === activeCategory) : fallbackProducts));
+  }, [activeCategory]);
 
   useEffect(() => {
     if (!location.hash || !products.length || slug) return;
@@ -56,13 +59,13 @@ export default function Products() {
     }, 120);
   }, [location.hash, products, slug]);
 
-  const selectedCategory = categories.find((item) => item.key === category);
+  const selectedCategory = categories.find((item) => item.key === activeCategory);
   const selectedProduct = useMemo(() => {
     if (!slug) return null;
     return products.find((item) => productSlug(item) === slug || String(item.id) === slug);
   }, [products, slug]);
 
-  if (!category) {
+  if (!activeCategory) {
     return (
       <main>
         <section className="products-index-hero">
@@ -73,7 +76,7 @@ export default function Products() {
         <section className="category-gallery-section">
           <div className="category-gallery">
             {categories.map((item) => (
-              <Link className="category-photo-card" to={`/products/${item.key}`} key={item.key}>
+              <Link className="category-photo-card" to={`/products?category=${item.key}`} key={item.key}>
                 <img src={assetUrl(item.imageUrl)} alt={item.label} />
                 <div>
                   <span>{String(item.key).replace(/-/g, " ")}</span>
@@ -99,7 +102,7 @@ export default function Products() {
               <span>{selectedCategory?.label || "Product"}</span>
               <h2>Product details are loading</h2>
               <p>Please open the category listing to view the latest available products.</p>
-              <Link className="button primary" to={`/products/${category}`}>Back to Category</Link>
+              <Link className="button primary" to={`/products?category=${activeCategory}`}>Back to Category</Link>
             </div>
           )}
         </section>
@@ -116,7 +119,7 @@ export default function Products() {
         <aside className="catalog-sidebar">
           <h2>Categories</h2>
           {categories.map((item) => (
-            <Link className={item.key === category ? "active" : ""} key={item.key} to={`/products/${item.key}`}>
+            <Link className={item.key === activeCategory ? "active" : ""} key={item.key} to={`/products?category=${item.key}`}>
               {item.label}<ChevronRight size={15} />
             </Link>
           ))}
@@ -134,7 +137,7 @@ export default function Products() {
           )}
         </div>
       </section>
-      {category === "ortho-implants" && (
+      {activeCategory === "ortho-implants" && (
         <section className="section tinted">
           <div className="section-heading">
             <span>Material quality</span>
