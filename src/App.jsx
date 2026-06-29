@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
@@ -7,8 +7,15 @@ import Products from "./pages/Products.jsx";
 import ImplantSystem from "./pages/ImplantSystem.jsx";
 import Quote from "./pages/Quote.jsx";
 import Contact from "./pages/Contact.jsx";
+import Certifications from "./pages/Certifications.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+
+function RequireAuth({ children }) {
+  const authed = localStorage.getItem("jd2_admin_token") || localStorage.getItem("jd2_admin_demo");
+  if (!authed) return <Navigate to="/admin" replace />;
+  return children;
+}
 
 export default function App() {
   const location = useLocation();
@@ -56,12 +63,16 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/implant-system" element={<ImplantSystem />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/products/:category" element={<Products />} />
+        <Route path="/products/:category/:slug" element={<Products />} />
+        <Route path="/certifications.html" element={<Certifications />} />
+        <Route path="/certifications" element={<Certifications />} />
         <Route path="/quote" element={<Quote />} />
         <Route path="/contact" element={<Contact />} />
       </Route>
       <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/dashboard" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
     </Routes>
   );
 }

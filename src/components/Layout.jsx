@@ -1,12 +1,13 @@
-import { Facebook, Globe2, Heart, Instagram, Mail, Menu, Phone, Search, ShoppingBag, UserRound, X, ChevronDown, Youtube } from "lucide-react";
+import { Award, ClipboardList, Facebook, Globe2, Instagram, Mail, Menu, Phone, Search, ShieldCheck, X, ChevronDown, Youtube } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { categories, fallbackProducts, megaMenuGroups } from "../data/fallback";
+import { categories as fallbackCategories, fallbackProducts } from "../data/fallback";
 import { productAnchor } from "./ProductGrid.jsx";
 import { api, assetUrl } from "../services/api";
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState(fallbackCategories);
   const [products, setProducts] = useState(fallbackProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -16,9 +17,15 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    api.get("/products")
-      .then((res) => setProducts(res.data.length ? res.data : fallbackProducts))
-      .catch(() => setProducts(fallbackProducts));
+    Promise.all([api.get("/categories"), api.get("/products")])
+      .then(([categoryRes, productRes]) => {
+        setCategories(categoryRes.data.length ? categoryRes.data.map((item) => ({ ...item, path: `/products/${item.key}` })) : fallbackCategories);
+        setProducts(productRes.data.length ? productRes.data : fallbackProducts);
+      })
+      .catch(() => {
+        setCategories(fallbackCategories);
+        setProducts(fallbackProducts);
+      });
   }, []);
 
   useEffect(() => {
@@ -97,10 +104,12 @@ export default function Layout() {
     <>
       <div className="top-contact-bar">
         <div>
-          <span><Phone size={14} /> +91 - 8849304101</span>
+          <span><Phone size={14} /> +91 88493 04101</span>
           <span><Globe2 size={14} /> www.jd2meditech.com</span>
           <span><Mail size={14} /> info@jd2meditech.com</span>
+          <span><ShieldCheck size={14} /> GST: 37AAFCJ6175K1Z2 | NHA: IN2810069836</span>
         </div>
+        <Link className="top-quote-button" to="/quote">Request Quote</Link>
         <div className="top-socials">
           <a href="#" aria-label="Facebook"><Facebook size={14} /></a>
           <a href="#" aria-label="Instagram"><Instagram size={14} /></a>
@@ -121,46 +130,47 @@ export default function Layout() {
           <NavLink to="/about" onClick={close}>About</NavLink>
           <NavLink to="/implant-system" onClick={close}>Implant System</NavLink>
           <div className="nav-dropdown">
-            <span>Products <ChevronDown size={16} /></span>
+            <Link className="nav-dropdown-label" to="/products" onClick={close}>Products <ChevronDown size={16} /></Link>
             <div className="dropdown-panel mega-menu">
               <div className="mega-menu-intro">
                 <span>Product Portfolio</span>
                 <strong>Clinical equipment and implant systems</strong>
-                <p>Browse by speciality. Categories without listings are ready for admin-added products.</p>
+                <p>Browse key product families for hospitals, clinics, and procurement teams.</p>
                 <Link to="/quote" onClick={close}>Request catalogue</Link>
               </div>
-              {megaMenuGroups.map((group) => (
+              {categories.map((group) => {
+                const groupProducts = products.filter((product) => product.category === group.key).slice(0, 7);
+                return (
                 <div className="mega-menu-group" key={group.key}>
                   <Link className="mega-menu-title" to={`/products/${group.key}`} onClick={close}>{group.label}</Link>
-                  {group.items.map((item) => (
+                  {groupProducts.length ? groupProducts.map((item) => (
                     <Link
-                      key={item}
-                      to={`/products/${group.key}#${item.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
+                      key={item.id || item.slug || item.name}
+                      to={`/products/${group.key}#${productAnchor(item)}`}
                       onClick={close}
                     >
-                      {item}
+                      {item.name}
                     </Link>
-                  ))}
+                  )) : null}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
-          <NavLink to="/quote" onClick={close}>Request Quote</NavLink>
+          <NavLink to="/certifications.html" onClick={close}>Certifications</NavLink>
           <NavLink to="/contact" onClick={close}>Contact</NavLink>
-          <NavLink to="/admin" onClick={close}>Admin</NavLink>
         </nav>
         <div className="nav-tools">
           {renderSearchBox()}
-          <Link className="tool-button" to="/quote" aria-label="Saved products"><Heart size={18} /></Link>
-          <Link className="tool-button" to="/products/ventilators" aria-label="Shop products"><ShoppingBag size={18} /></Link>
-          <Link className="tool-button" to="/admin" aria-label="Admin login"><UserRound size={18} /></Link>
+          <Link className="tool-button" to="/certifications.html" aria-label="Certifications"><Award size={18} /></Link>
+          <Link className="tool-button" to="/quote" aria-label="Request quote"><ClipboardList size={18} /></Link>
         </div>
       </header>
       <Outlet />
       <footer className="footer">
         <div>
           <img src="/images/logo.png" alt="JD2 Meditech" />
-          <p>JD2 Meditech Pvt. Ltd. manufactures orthopedic implants and supplies dependable medical equipment for healthcare facilities.</p>
+          <p>JD2 Meditech Private Limited is a comprehensive healthcare solutions provider delivering complete procurement solutions — medical equipment, pharmaceuticals, surgical consumables, modular OT solutions, hospital furniture, and injectable products. GST: 37AAFCJ6175K1Z2 | NHA Health Facility Registration: IN2810069836. Trusted by Apollo Group, KIMS Group, Aster Group, ESI Hospitals, Central Government & South Central Railway Hospitals, GGH and Primary Area Hospitals across Andhra Pradesh.</p>
           <div className="footer-social">
             <span>Follow</span>
             <a href="#" aria-label="Facebook"><Facebook size={18} /></a>
@@ -170,11 +180,12 @@ export default function Layout() {
         </div>
         <div>
           <strong>Products</strong>
-          {categories.map((item) => <Link key={item.key} to={item.path}>{item.label}</Link>)}
+          {categories.map((item) => <Link key={item.key} to={`/products/${item.key}`}>{item.label}</Link>)}
         </div>
         <div>
           <strong>Company</strong>
           <Link to="/about">About</Link>
+          <Link to="/certifications.html">Certifications</Link>
           <Link to="/quote">Request Quote</Link>
           <Link to="/contact">Contact</Link>
         </div>

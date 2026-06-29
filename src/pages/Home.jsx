@@ -37,25 +37,25 @@ export default function Home() {
   const heroSlides = [
     {
       image: hero.imageUrl || "/images/section2.jpg",
-      eyebrow: hero.eyebrow || "Healthcare supply partner",
-      title: hero.title || "Smarter medical sourcing for modern care teams",
+      eyebrow: hero.eyebrow || "One-Stop Healthcare Solutions Provider",
+      title: hero.title || "Complete Healthcare Solutions Under One Roof",
       body:
         hero.body ||
-        "JD2 Meditech supports hospitals, surgeons, and procurement teams with dependable equipment sourcing, implant systems, and quotation guidance."
-    },
-    {
-      image: "/images/slider3.jpg",
-      eyebrow: "Clinical decision support",
-      title: "Technology-ready products for confident care",
-      body:
-        "Organized medical categories and fast response workflows help teams move from requirement to quotation with clarity."
+        "JD2 Meditech Private Limited delivers end-to-end hospital procurement — medical equipment, pharmaceuticals, surgical consumables, modular OT solutions, hospital furniture, and injectable products — all sourced from a single trusted partner."
     },
     {
       image: "/images/section1.jpg",
-      eyebrow: "Quality-led procurement",
-      title: "Built around people, precision, and service",
+      eyebrow: "Hospital Infrastructure Partner",
+      title: "Modular OT Solutions & Critical Care Equipment",
       body:
-        "From orthopedic programs to critical-care departments, JD2 keeps product discovery simple, responsive, and well supported."
+        "Turnkey operation theatre design, HVAC laminar airflow, medical gas pipelines, ICU ventilators, patient monitors, and surgical consumables delivered with quality assurance and regulatory compliance."
+    },
+    {
+      image: "/images/section3.jpg",
+      eyebrow: "Trusted by Hospitals Across AP & Telangana",
+      title: "Procurement Partner to Apollo, KIMS, Aster & Government Hospitals",
+      body:
+        "JD2 Meditech collaborates with Apollo Group, KIMS Group, Aster Group, ESI Hospitals, Ramesh Hospitals, Central Government Hospitals, South Central Railways Hospitals, GGH Hospitals, and Primary Area Hospitals across Andhra Pradesh."
     }
   ];
 
@@ -133,26 +133,38 @@ export default function Home() {
       <section className="home-service-strip">
         <article>
           <Stethoscope size={30} />
-          <strong>Implant Systems</strong>
-          <span>Spine, trauma, plates and fixation</span>
+          <strong>Hospital & Medical Equipment</strong>
+          <span>ICU, ventilators, monitors, imaging & diagnostics</span>
         </article>
 
         <article>
           <HeartPulse size={30} />
-          <strong>Critical Care</strong>
-          <span>Ventilators, monitors and emergency equipment</span>
+          <strong>Pharmaceuticals & Supplies</strong>
+          <span>Branded, generic & critical care medicines</span>
         </article>
 
         <article>
           <ShieldCheck size={30} />
-          <strong>Quality Guidance</strong>
-          <span>ISO process and CE implant ranges</span>
+          <strong>Surgical Consumables</strong>
+          <span>Gloves, sutures, drapes & infection control</span>
+        </article>
+
+        <article>
+          <Truck size={30} />
+          <strong>Modular OT Solutions</strong>
+          <span>Turnkey OT design, HVAC & medical gas systems</span>
+        </article>
+
+        <article>
+          <Award size={30} />
+          <strong>Hospital Furniture</strong>
+          <span>Beds, stretchers, trolleys & clinical furniture</span>
         </article>
 
         <article>
           <Headphones size={30} />
-          <strong>Quotation Desk</strong>
-          <span>Fast matching and procurement response</span>
+          <strong>Injectable Products</strong>
+          <span>IV fluids, critical care injectables & vaccines</span>
         </article>
       </section>
 
@@ -169,21 +181,24 @@ export default function Home() {
         </div>
 
         <div className="about-copy">
-          <span className="eyebrow">{profile.eyebrow || "About Our Company"}</span>
+          <span className="eyebrow">{profile.eyebrow || "About JD2 Meditech"}</span>
 
-          <h2>{profile.title || "Choose a dependable medical supply partner"}</h2>
+          <h2>{profile.title || "One-Stop Healthcare Procurement for Hospitals & Institutions"}</h2>
 
           <p>
             {profile.body ||
-              "JD2 Meditech works with hospitals, surgeons, and procurement teams to provide orthopedic implants, instruments, ventilators, defibrillators, and critical care devices with dependable service support."}
+              "JD2 Meditech Private Limited is a comprehensive healthcare solutions provider dedicated to supporting hospitals, clinics, nursing homes, diagnostic centres, medical colleges, and government healthcare institutions. We offer an integrated range of hospital and medical equipment, pharmaceuticals, surgical consumables, modular operation theatre solutions, hospital furniture, and injectable products — enabling healthcare providers to source all requirements from a single trusted partner registered under GST (37AAFCJ6175K1Z2) and the National Health Authority."}
           </p>
 
           <div className="about-points">
             <p>
-              <Award /> Quality-backed product discovery
+              <Award /> Quality-assured products compliant with ISO, ISI, and WHO GMP standards
             </p>
             <p>
-              <ShieldCheck /> Technical and quotation support
+              <ShieldCheck /> Competitive pricing with India-made supply and reliable logistics
+            </p>
+            <p>
+              <HeartPulse /> Trusted partner to Apollo Group, KIMS Group, Aster Group & Government Hospitals
             </p>
           </div>
 
@@ -197,6 +212,70 @@ export default function Home() {
               <strong>+91 88493 04101</strong>
             </a>
           </div>
+        </div>
+      </section>
+
+      <section className="services-section">
+        <div className="section-heading">
+          <span>Our Business Segments</span>
+          <h2>Complete Healthcare Solutions Under One Roof</h2>
+          <p>End-to-end hospital procurement — equipment, pharmaceuticals, furniture, surgical consumables, OT infrastructure and injectable products from a single partner.</p>
+        </div>
+
+        <div className="services-grid">
+          <article className="service-card">
+            <div className="service-icon">
+              <Stethoscope size={32} />
+            </div>
+            <h3>Hospital & Medical Equipment</h3>
+            <p>Advanced ICU and critical care equipment, patient monitoring systems, ventilators, diagnostic and imaging equipment, operation theatre equipment, emergency and trauma care devices, neonatal and paediatric care equipment, rehabilitation and physiotherapy systems, and laboratory instruments from reputed manufacturers.</p>
+            <Link to="/products">Explore Products <ArrowRight size={16} /></Link>
+          </article>
+
+          <article className="service-card">
+            <div className="service-icon">
+              <HeartPulse size={32} />
+            </div>
+            <h3>Pharmaceuticals & Healthcare Supplies</h3>
+            <p>Comprehensive range of branded and generic medicines, specialty pharmaceuticals, critical care medications, hospital pharmacy supplies, healthcare consumables, antibiotics, therapeutic drugs, and emergency medicines with stringent quality standards and efficient supply chain management.</p>
+            <Link to="/quote">Request Catalogue <ArrowRight size={16} /></Link>
+          </article>
+
+          <article className="service-card">
+            <div className="service-icon">
+              <ShieldCheck size={32} />
+            </div>
+            <h3>Surgical Consumables & Medical Disposables</h3>
+            <p>High-quality surgical gloves, sutures, dressing materials, surgical drapes and gowns, catheters and cannulas, syringes and needles, infection control products, sterilization consumables, and medical disposables ensuring patient safety and infection prevention.</p>
+            <Link to="/quote">Request Details <ArrowRight size={16} /></Link>
+          </article>
+
+          <article className="service-card">
+            <div className="service-icon">
+              <Truck size={32} />
+            </div>
+            <h3>Modular Operation Theatre Solutions</h3>
+            <p>State-of-the-art modular OT design, supply, installation, and commissioning. Includes modular wall and ceiling systems, HVAC and laminar airflow, OT lighting, medical gas pipeline systems, hermetic doors, surgeon control panels, and integrated OT solutions for a sterile surgical environment.</p>
+            <Link to="/quote">Discuss OT Project <ArrowRight size={16} /></Link>
+          </article>
+
+          <article className="service-card">
+            <div className="service-icon">
+              <Award size={32} />
+            </div>
+            <h3>Hospital Furniture & Infrastructure</h3>
+            <p>Ergonomic and durable hospital beds, ICU beds, examination tables, patient trolleys, stretchers, bedside lockers, overbed tables, wheelchairs, waiting area furniture, and nursing station furniture designed for comfort and healthcare compliance.</p>
+            <Link to="/products/hospital-furniture">Explore Furniture <ArrowRight size={16} /></Link>
+          </article>
+
+          <article className="service-card">
+            <div className="service-icon">
+              <Headphones size={32} />
+            </div>
+            <h3>Injectable Products & Critical Care</h3>
+            <p>Reliable IV fluids, injectable medicines, emergency and critical care injectables, oncology injectables, specialty injectables, vaccines, biological products, and hospital emergency kits — ensuring uninterrupted availability of life-saving products.</p>
+            <Link to="/quote">Request Supply Info <ArrowRight size={16} /></Link>
+          </article>
         </div>
       </section>
 
@@ -304,37 +383,36 @@ export default function Home() {
       <section className="process-section">
         <div className="section-heading">
           <span>Working Process</span>
-          <h2>A simple procurement workflow</h2>
+          <h2>How we partner with your healthcare facility</h2>
         </div>
 
         <div className="process-flow">
           <article>
             <span>01</span>
-            <strong>Submit Requirement</strong>
-            <p>Share category, quantity, and specifications.</p>
+            <strong>Share Requirement</strong>
+            <p>Submit your hospital's product and infrastructure requirements — equipment, consumables, OT specifications, or pharmaceutical supplies.</p>
           </article>
 
           <article className="active">
             <span>02</span>
-            <strong>Technical Match</strong>
-            <p>JD2 reviews fitment and product options.</p>
+            <strong>Technical Consultation</strong>
+            <p>Our team reviews fitment, regulatory compliance, and product specifications. We propose quality-assured solutions with competitive pricing.</p>
           </article>
 
           <article>
             <span>03</span>
-            <strong>Quote & Supply</strong>
-            <p>Receive quotation, timelines, and support.</p>
+            <strong>Supply & Commissioning</strong>
+            <p>Receive confirmed quotation, delivery timeline, installation support, and after-sales service from JD2 Logistics & Techcell Solutions.</p>
           </article>
         </div>
       </section>
 
       <section className="section new-arrivals">
         <div className="section-heading">
-          <span>New arrivals</span>
-          <h2>Fresh catalogue picks for hospital teams</h2>
+          <span>Featured Products</span>
+          <h2>Quality-assured medical equipment for modern healthcare</h2>
           <p>
-            Products from the JD2 catalogue are structured for database-backed
-            display and admin updates.
+            Explore selected medical equipment and implant systems for hospital procurement teams — sourced from reputed ISO and ISI certified manufacturers.
           </p>
         </div>
 
@@ -358,7 +436,7 @@ function ProductMarquee({ products }) {
   return (
     <section className="product-marquee" aria-label="JD2 product showcase">
       <div className="marquee-title">
-        <span>A Medical Equipment Manufacturing Company</span>
+        <span>Complete Healthcare Solutions — Medical Equipment, Pharmaceuticals, Surgical Consumables, Modular OT, Hospital Furniture & Injectable Products</span>
       </div>
 
       <div className="marquee-window">

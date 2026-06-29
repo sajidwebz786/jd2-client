@@ -18,7 +18,7 @@ const implantGroups = [
       "Multi Angle Humerus Nail",
       "Distal Humerus Plate"
     ],
-    image: "/images/ortho-implants/Manufacturer of CE - Orthopedic Implants _ Supplying Globally.jpg"
+    image: "/images/ortho-implants/Safety Lock Periarticular Proximal Humerus Plate.jpg"
   },
   {
     title: "Femur",
@@ -98,30 +98,7 @@ function ImplantPanel({ group }) {
 function AnatomyFigure() {
   return (
     <div className="anatomy-figure" aria-hidden="true">
-      <span className="bone skull" />
-      <span className="bone neck" />
-      <span className="bone spine" />
-      <span className="bone rib left-rib rib-one" />
-      <span className="bone rib right-rib rib-one" />
-      <span className="bone rib left-rib rib-two" />
-      <span className="bone rib right-rib rib-two" />
-      <span className="bone rib left-rib rib-three" />
-      <span className="bone rib right-rib rib-three" />
-      <span className="bone pelvis" />
-      <span className="bone arm left-arm" />
-      <span className="bone arm right-arm" />
-      <span className="bone forearm left-forearm" />
-      <span className="bone forearm right-forearm" />
-      <span className="bone leg left-leg" />
-      <span className="bone leg right-leg" />
-      <span className="bone shin left-shin" />
-      <span className="bone shin right-shin" />
-      <span className="bone joint left-shoulder" />
-      <span className="bone joint right-shoulder" />
-      <span className="bone joint left-hip" />
-      <span className="bone joint right-hip" />
-      <span className="bone joint left-knee" />
-      <span className="bone joint right-knee" />
+      <img src="/images/implant-skeleton-reference.png" alt="" />
     </div>
   );
 }
@@ -171,16 +148,15 @@ export default function ImplantSystem() {
           ))}
         </div>
         <div className="implant-detail-copy">
-          <span>Orthopedic implant systems</span>
-          <h2>Implant ranges for trauma, spine and extremity procedures</h2>
+          <span>Orthopedic implant systems by JD2 Meditech</span>
+          <h2>Comprehensive implant ranges for trauma, spine and extremity procedures</h2>
           <p>
-            Explore JD2 Meditech implant categories by anatomical region and share your requirement for
-            availability, specifications, sizing support and quotation assistance.
+            JD2 Meditech is a comprehensive healthcare solutions provider — beyond orthopedic implants, we also supply medical equipment, pharmaceuticals, surgical consumables, modular OT solutions, hospital furniture, and injectable products. Our implant portfolio covers clavicle, humerus, femur, foot & ankle, scapula, radius & ulna, pelvic, and tibia systems, available with specifications, sizing support, and quotation assistance.
           </p>
           <div className="implant-checks">
-            <p><ShieldCheck size={19} /> Anatomical grouping helps surgeons and procurement teams find the right implant family faster.</p>
-            <p><ShieldCheck size={19} /> Product categories cover clavicle, humerus, femur, foot and ankle, scapula, radius and ulna, pelvic and tibia systems.</p>
-            <p><ShieldCheck size={19} /> Request a quote with procedure details, preferred material, sizes and quantity requirements.</p>
+            <p><ShieldCheck size={19} /> ISO, ISI Mark, NSIC Approved, WHO GMP — all implant systems are quality certified.</p>
+            <p><ShieldCheck size={19} /> Available to hospitals across Andhra Pradesh including GGH, Area Hospitals, Apollo, KIMS, Aster, ESI, and Central Government Hospitals.</p>
+            <p><ShieldCheck size={19} /> Request a quote with procedure details, preferred material, sizes, and quantity requirements.</p>
           </div>
           <Link className="button primary" to="/quote">Request Implant Quote <MoveRight size={18} /></Link>
         </div>

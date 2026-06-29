@@ -11,12 +11,13 @@ import {
   Package,
   Plus,
   Save,
+  Tags,
   Trash2,
   Upload
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { categories, fallbackProducts } from "../../data/fallback";
+import { categories as fallbackCategories, fallbackContent, fallbackProducts } from "../../data/fallback";
 import { api, assetUrl } from "../../services/api";
 
 const blankProduct = {
@@ -30,6 +31,15 @@ const blankProduct = {
   active: true,
   sortOrder: 0,
   specifications: []
+};
+
+const blankCategory = {
+  key: "",
+  label: "",
+  description: "",
+  imageUrl: "",
+  active: true,
+  sortOrder: 0
 };
 
 const blankContent = {
@@ -47,6 +57,7 @@ const blankContent = {
 
 const menuItems = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
+  { key: "categories", label: "Categories", icon: Tags },
   { key: "products", label: "Products", icon: Package },
   { key: "quotes", label: "Quotes", icon: Inbox },
   { key: "enquiries", label: "Feedback & Enquiries", icon: MessageSquare },
@@ -57,12 +68,14 @@ const menuItems = [
 export default function AdminDashboard() {
   const [demoMode, setDemoMode] = useState(localStorage.getItem("jd2_admin_demo") === "true");
   const [activePanel, setActivePanel] = useState("overview");
+  const [categories, setCategories] = useState(fallbackCategories);
   const [products, setProducts] = useState([]);
   const [quotes, setQuotes] = useState([]);
   const [enquiries, setEnquiries] = useState([]);
   const [content, setContent] = useState([]);
   const [media, setMedia] = useState([]);
   const [productForm, setProductForm] = useState(blankProduct);
+  const [categoryForm, setCategoryForm] = useState(blankCategory);
   const [contentForm, setContentForm] = useState(blankContent);
   const [viewProduct, setViewProduct] = useState(null);
   const [mode, setMode] = useState("create");
@@ -73,11 +86,12 @@ export default function AdminDashboard() {
       ...category,
       products: products.filter((product) => product.category === category.key)
     }));
-  }, [products]);
+  }, [products, categories]);
 
   const load = async () => {
     if (localStorage.getItem("jd2_admin_demo") === "true") {
       setDemoMode(true);
+      setCategories(fallbackCategories);
       setProducts(fallbackProducts.map((product) => ({
         ...product,
         active: product.active ?? true,
@@ -106,18 +120,7 @@ export default function AdminDashboard() {
           status: "new"
         }
       ]);
-      setContent([
-        {
-          id: 1,
-          page: "home",
-          section: "hero",
-          eyebrow: "Medical equipment",
-          title: "JD2 Meditech Pvt. Ltd.",
-          body: "Demo website content record for client walkthrough.",
-          active: true,
-          sortOrder: 0
-        }
-      ]);
+      setContent(fallbackContent);
       setMedia(fallbackProducts.slice(0, 6).map((product) => ({
         id: product.id,
         title: product.name,
@@ -127,13 +130,15 @@ export default function AdminDashboard() {
       return;
     }
 
-    const [p, q, e, c, m] = await Promise.all([
+    const [cat, p, q, e, c, m] = await Promise.all([
+      api.get("/admin/categories"),
       api.get("/admin/products"),
       api.get("/admin/quotes"),
       api.get("/admin/enquiries"),
       api.get("/admin/content"),
       api.get("/admin/media")
     ]);
+    setCategories(cat.data.length ? cat.data : fallbackCategories);
     setProducts(p.data);
     setQuotes(q.data);
     setEnquiries(e.data);
@@ -142,13 +147,59 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    load().catch(() => navigate("/admin"));
-  }, []);
+    const isAuthed = localStorage.getItem("jd2_admin_token") || localStorage.getItem("jd2_admin_demo");
+    if (!isAuthed) {
+      navigate("/admin");
+      return;
+    }
+    load().catch(() => {});
+  }, [navigate]);
 
   function resetProductForm() {
     setProductForm(blankProduct);
     setViewProduct(null);
     setMode("create");
+  }
+
+  function resetCategoryForm() {
+    setCategoryForm(blankCategory);
+  }
+
+  function editCategory(category) {
+    setCategoryForm({ ...blankCategory, ...category });
+    setActivePanel("categories");
+  }
+
+  async function saveCategory(event) {
+    event.preventDefault();
+    const payload = {
+      ...categoryForm,
+      key: categoryForm.key || categoryForm.label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+    };
+    if (demoMode) {
+      setCategories((current) => {
+        if (payload.id) return current.map((item) => item.id === payload.id ? payload : item);
+        return [{ ...payload, id: Date.now() }, ...current];
+      });
+      resetCategoryForm();
+      return;
+    }
+    if (categoryForm.id) await api.put(`/admin/categories/${categoryForm.id}`, payload);
+    else await api.post("/admin/categories", payload);
+    resetCategoryForm();
+    await load();
+  }
+
+  async function deleteCategory(category) {
+    if (!window.confirm(`Delete ${category.label}? Products assigned to this key will remain but the category menu item will be removed.`)) return;
+    if (demoMode) {
+      setCategories((current) => current.filter((item) => item.id !== category.id && item.key !== category.key));
+      if (categoryForm.id === category.id) resetCategoryForm();
+      return;
+    }
+    await api.delete(`/admin/categories/${category.id}`);
+    if (categoryForm.id === category.id) resetCategoryForm();
+    await load();
   }
 
   function editProduct(product) {
@@ -200,6 +251,7 @@ export default function AdminDashboard() {
       const item = { id: Date.now(), title: file.name, url, altText: file.name };
       setMedia((current) => [item, ...current]);
       if (target === "content") setContentForm((current) => ({ ...current, imageUrl: url }));
+      else if (target === "category") setCategoryForm((current) => ({ ...current, imageUrl: url }));
       else setProductForm((current) => ({ ...current, imageUrl: url }));
       event.target.value = "";
       return;
@@ -209,6 +261,7 @@ export default function AdminDashboard() {
     data.append("title", file.name);
     const res = await api.post("/admin/media", data);
     if (target === "content") setContentForm((current) => ({ ...current, imageUrl: res.data.url }));
+    else if (target === "category") setCategoryForm((current) => ({ ...current, imageUrl: res.data.url }));
     else setProductForm((current) => ({ ...current, imageUrl: res.data.url }));
     event.target.value = "";
     await load();
@@ -270,7 +323,10 @@ export default function AdminDashboard() {
   return (
     <main className="admin-shell">
       <aside className="admin-sidebar">
-        <img src="/images/logo.png" style={{width:"90%", marginLeft:"auto", marginRight:"auto"}} alt="JD2 Meditech" />
+        <div className="login-logo-wrap">
+          <img src="/images/logo.png" alt="JD2 Meditech" onError={(e) => { e.target.style.display = "none"; e.target.parentElement.querySelector(".logo-fallback").style.display = "flex"; }} />
+          <span className="logo-fallback" style={{display:"none", fontSize:"22px", fontWeight:900, color:"white", letterSpacing:"-1px"}}>JD2 Meditech</span>
+        </div>
         <Link className="sidebar-link" to="/">View Website</Link>
         <nav>
           {menuItems.map((item) => {
@@ -295,6 +351,7 @@ export default function AdminDashboard() {
           <>
             <div className="admin-stats">
               <div><Package /><strong>{products.length}</strong><span>Products</span></div>
+              <div><Tags /><strong>{categories.length}</strong><span>Categories</span></div>
               <div><Inbox /><strong>{quotes.length}</strong><span>Quotes</span></div>
               <div><MessageSquare /><strong>{enquiries.length}</strong><span>Enquiries</span></div>
               <div><ImagePlus /><strong>{media.length}</strong><span>Images</span></div>
@@ -303,6 +360,7 @@ export default function AdminDashboard() {
               <h2>Quick Links</h2>
               <div className="quick-actions">
                 <button onClick={() => setActivePanel("products")}><Plus size={17} /> Add Product</button>
+                <button onClick={() => setActivePanel("categories")}><Tags size={17} /> Manage Menu</button>
                 <button onClick={() => setActivePanel("quotes")}><Inbox size={17} /> View Quotes</button>
                 <button onClick={() => setActivePanel("content")}><FileText size={17} /> Edit Website Text</button>
               </div>
@@ -314,6 +372,7 @@ export default function AdminDashboard() {
           <ProductAdmin
             form={productForm}
             mode={mode}
+            categories={categories}
             groupedProducts={groupedProducts}
             media={media}
             viewProduct={viewProduct}
@@ -324,6 +383,19 @@ export default function AdminDashboard() {
             setViewProduct={setViewProduct}
             editProduct={editProduct}
             deleteProduct={deleteProduct}
+          />
+        )}
+
+        {activePanel === "categories" && (
+          <CategoryAdmin
+            form={categoryForm}
+            categories={categories}
+            setForm={setCategoryForm}
+            resetForm={resetCategoryForm}
+            saveCategory={saveCategory}
+            editCategory={editCategory}
+            deleteCategory={deleteCategory}
+            uploadImage={uploadImage}
           />
         )}
 
@@ -353,6 +425,7 @@ export default function AdminDashboard() {
 function ProductAdmin({
   form,
   mode,
+  categories,
   groupedProducts,
   media,
   viewProduct,
@@ -463,6 +536,62 @@ function ProductAdmin({
   );
 }
 
+function CategoryAdmin({ form, categories, setForm, resetForm, saveCategory, editCategory, deleteCategory, uploadImage }) {
+  return (
+    <>
+      <section className="admin-panel">
+        <div className="panel-title-row">
+          <h2>{form.id ? "Edit Category and Menu Item" : "Create Category and Menu Item"}</h2>
+          {form.id && <button className="secondary-button" onClick={resetForm}>New Category</button>}
+        </div>
+        <form className="admin-form product-form" onSubmit={saveCategory}>
+          <input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Category label" required />
+          <input value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} placeholder="Category key auto-created if blank" />
+          <input type="number" value={form.sortOrder || 0} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} placeholder="Menu sort order" />
+          <input value={form.imageUrl || ""} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="Category image URL" />
+          <label className="upload-button"><Upload size={16} /> Upload category image<input type="file" accept="image/*" onChange={(event) => uploadImage(event, "category")} /></label>
+          <label className="check-row"><input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Visible in website menu</label>
+          {form.imageUrl && <img className="form-preview" src={assetUrl(form.imageUrl)} alt={form.label || "Category preview"} />}
+          <textarea value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Category description" />
+          <button className="button primary" type="submit"><Save size={16} /> {form.id ? "Update Category" : "Create Category"}</button>
+        </form>
+      </section>
+      <section className="admin-panel">
+        <h2>Menu Categories</h2>
+        <div className="category-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Category</th>
+                <th>Key</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map((category) => (
+                <tr key={category.id || category.key}>
+                  <td><img src={assetUrl(category.imageUrl)} alt={category.label} /></td>
+                  <td><strong>{category.label}</strong><small>{category.description}</small></td>
+                  <td>{category.key}</td>
+                  <td>{category.active ? "Visible" : "Hidden"}</td>
+                  <td>
+                    <div className="row-actions">
+                      <button onClick={() => editCategory(category)}><Edit size={15} /> Edit</button>
+                      <button className="danger-link" onClick={() => deleteCategory(category)}><Trash2 size={15} /> Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
+}
+
 function ContentAdmin({ form, items, setForm, saveContent, deleteContent, editContent, uploadImage }) {
   return (
     <>
@@ -476,6 +605,7 @@ function ContentAdmin({ form, items, setForm, saveContent, deleteContent, editCo
             <option value="home">Home</option>
             <option value="about">About</option>
             <option value="contact">Contact</option>
+            <option value="certifications">Certifications</option>
             <option value="quote">Quote</option>
           </select>
           <input value={form.section} onChange={(e) => setForm({ ...form, section: e.target.value })} placeholder="Section key, e.g. hero or profile" required />

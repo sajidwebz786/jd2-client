@@ -7,6 +7,13 @@ export function productAnchor(product) {
   return `product-${String(key).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
 }
 
+export function productSlug(product) {
+  return String(product.slug || product.name || product.id)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export default function ProductGrid({ products }) {
   return (
     <div className="product-grid">
@@ -19,7 +26,7 @@ export default function ProductGrid({ products }) {
             <span>{product.category?.replace("-", " ")}</span>
             <h3>{product.name}</h3>
             <p>{product.shortDescription}</p>
-            <Link to="/quote">Request details <ArrowRight size={16} /></Link>
+            <Link to={`/products/${product.category}/${productSlug(product)}`}>View details <ArrowRight size={16} /></Link>
           </div>
         </article>
       ))}
