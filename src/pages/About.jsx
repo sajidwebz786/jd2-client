@@ -2,6 +2,35 @@ import { Award, Eye, Target, ShieldCheck, HeartPulse, Stethoscope, Truck, Headph
 import { useEffect, useMemo, useState } from "react";
 import { api, assetUrl } from "../services/api";
 
+const partnerLogos = [
+  { name: "Apollo Group", src: "/images/logos/Apollo-logo.png", alt: "Apollo Group" },
+  { name: "KIMS Group", src: "/images/logos/kims-logo.png", alt: "KIMS Group" },
+  { name: "Aster Group", src: "/images/logos/Aster-logo.png", alt: "Aster Group" },
+  { name: "ESI Hospitals", src: "/images/logos/Esi-Logo.png", alt: "ESI Hospitals" },
+  { name: "Central Government Hospitals", src: null, alt: "Central Government Hospitals", text: "Central Gov. Hospitals" },
+  { name: "South Central Railway Hospitals", src: null, alt: "South Central Railway Hospitals", text: "South Central Railway" },
+  { name: "GGH Hospitals AP", src: null, alt: "GGH Hospitals Andhra Pradesh", text: "GGH & Area Hospitals AP" }
+];
+
+function PartnerLogoScroll() {
+  const duplicated = [...partnerLogos, ...partnerLogos];
+  return (
+    <div className="partner-logo-marquee">
+      <div className="partner-logo-track">
+        {duplicated.map((partner, i) => (
+          <div className="partner-logo-item" key={`${partner.name}-${i}`}>
+            {partner.src ? (
+              <img src={partner.src} alt={partner.alt} onError={(e) => { e.target.style.display = "none"; e.target.parentElement.querySelector(".partner-logo-text-fallback").style.display = "flex"; }} />
+            ) : null}
+            <div className="partner-logo-text-fallback" style={{display: partner.src ? "none" : "flex"}}>{partner.text || partner.name}</div>
+            <span>{partner.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function About() {
   const [content, setContent] = useState([]);
   const sections = useMemo(() => Object.fromEntries(content.filter((item) => item.page === "about").map((item) => [item.section, item])), [content]);
@@ -38,7 +67,8 @@ export default function About() {
           <h2>Trusted by leading healthcare institutions across India</h2>
           <p>JD2 Meditech collaborates with premier hospital groups, government institutions, and healthcare networks.</p>
         </div>
-        <div className="services-grid">
+        <PartnerLogoScroll />
+        <div className="services-grid" style={{marginTop: "28px"}}>
           <article className="service-card">
             <div className="service-icon"><Award size={32} /></div>
             <h3>Apollo Group</h3>

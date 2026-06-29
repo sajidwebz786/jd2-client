@@ -22,7 +22,7 @@ export default function Contact() {
         <div className="contact-list">
           <h2>Get in touch</h2>
           <p><MapPin /> 20-1-113/A, Korlagunta Block-1, Chittoor, Tirupati Urban, Andhra Pradesh, India - 517501</p>
-          <p><Phone /> +91 88493 04101</p>
+          <p><Phone /> +91 99595 90524</p>
           <p><Mail /> info@jd2meditech.com</p>
           <p><Clock /> Mon - Fri: 9:00 AM - 6:00 PM | Sat: 10:00 AM - 4:00 PM</p>
         </div>

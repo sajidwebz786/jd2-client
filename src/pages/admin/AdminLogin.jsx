@@ -10,6 +10,7 @@ export default function AdminLogin() {
   const [email, setEmail] = useState(demoEmail);
   const [password, setPassword] = useState(demoPassword);
   const [error, setError] = useState("");
+  const [logoError, setLogoError] = useState(false);
   const navigate = useNavigate();
 
   function canUseDemoLogin(status, hasResponse) {
@@ -49,8 +50,11 @@ export default function AdminLogin() {
     <main className="admin-login">
       <form className="panel-form" onSubmit={login}>
         <div className="login-logo-wrap">
-          <img src="/images/logo.png" alt="JD2 Meditech" onError={(e) => { e.target.style.display = "none"; e.target.parentElement.querySelector(".logo-fallback").style.display = "flex"; }} />
-          <span className="logo-fallback" style={{display:"none", fontSize:"28px", fontWeight:900, color:"var(--ink)", letterSpacing:"-1px"}}>JD2</span>
+          {!logoError ? (
+            <img src="images/logo-color.png" alt="JD2 Meditech" onError={() => setLogoError(true)} />
+          ) : (
+            <div className="logo-fallback">JD2</div>
+          )}
         </div>
         <h1>Admin Module</h1>
         <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Admin email" />

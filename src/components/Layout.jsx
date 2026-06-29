@@ -8,12 +8,14 @@ import { api, assetUrl } from "../services/api";
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [categories, setCategories] = useState(fallbackCategories);
   const [products, setProducts] = useState(fallbackProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const close = () => {
     setOpen(false);
+    setOpenDropdown(null);
     setSearchOpen(false);
   };
 
@@ -31,9 +33,12 @@ export default function Layout() {
 
   useEffect(() => {
     const closeSearch = (event) => {
-      if (event.key === "Escape") setSearchOpen(false);
+      if (event.key === "Escape") { setSearchOpen(false); setOpenDropdown(null); }
       if (event.type === "mousedown" && !event.target.closest(".site-search")) {
         setSearchOpen(false);
+      }
+      if (event.type === "mousedown" && !event.target.closest(".nav-dropdown")) {
+        setOpenDropdown(null);
       }
     };
 
@@ -105,7 +110,7 @@ export default function Layout() {
     <>
       <div className="top-contact-bar">
         <div>
-          <span><Phone size={14} /> +91 88493 04101</span>
+          <span><Phone size={14} /> +91 99595 90524</span>
           <span><Globe2 size={14} /> www.jd2meditech.com</span>
           <span><Mail size={14} /> info@jd2meditech.com</span>
           <span><ShieldCheck size={14} /> GST: 37AAFCJ6175K1Z2 | NHA: IN2810069836</span>
@@ -130,8 +135,10 @@ export default function Layout() {
           <NavLink to="/" onClick={close}>Home</NavLink>
           <NavLink to="/about" onClick={close}>About</NavLink>
           <NavLink to="/implant-system" onClick={close}>Implant System</NavLink>
-          <div className="nav-dropdown services-dropdown">
-            <span className="nav-dropdown-label">Services <ChevronDown size={16} /></span>
+          <div className={`nav-dropdown ${openDropdown === "services" ? "dropdown-open" : ""}`}
+               onMouseEnter={() => setOpenDropdown("services")}
+               onMouseLeave={() => setOpenDropdown(null)}>
+            <span className="nav-dropdown-label" onClick={() => setOpenDropdown(openDropdown === "services" ? null : "services")}>Services <ChevronDown size={16} /></span>
             <div className="dropdown-panel services-mega">
               {services.map((service) => (
                 <Link className="service-menu-item" to={servicePath(service.key)} onClick={close} key={service.key}>
@@ -144,8 +151,10 @@ export default function Layout() {
               ))}
             </div>
           </div>
-          <div className="nav-dropdown">
-            <Link className="nav-dropdown-label" to="/products" onClick={close}>Products <ChevronDown size={16} /></Link>
+          <div className={`nav-dropdown ${openDropdown === "products" ? "dropdown-open" : ""}`}
+               onMouseEnter={() => setOpenDropdown("products")}
+               onMouseLeave={() => setOpenDropdown(null)}>
+            <span className="nav-dropdown-label" onClick={() => setOpenDropdown(openDropdown === "products" ? null : "products")}>Products <ChevronDown size={16} /></span>
             <div className="dropdown-panel mega-menu">
               {categories.map((group) => {
                 const groupProducts = products.filter((product) => product.category === group.key).slice(0, 7);
@@ -201,7 +210,7 @@ export default function Layout() {
         <div>
           <strong>Contact</strong>
           <p className="footer-contact"><Globe2 size={16} /> www.jd2meditech.com</p>
-          <p className="footer-contact"><Phone size={16} /> +91 - 8849304101</p>
+          <p className="footer-contact"><Phone size={16} /> +91 - 99595 90524</p>
           <p className="footer-contact"><Mail size={16} /> info@jd2meditech.com</p>
         </div>
       </footer>

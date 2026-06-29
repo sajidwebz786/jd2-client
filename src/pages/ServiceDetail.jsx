@@ -46,7 +46,7 @@ export default function ServiceDetail() {
         </div>
         <div className="service-connect-actions">
           <Link to={`/quote?category=${encodeURIComponent(service.title)}`}><ClipboardCheck size={18} /> Request Service Quote</Link>
-          <a href="tel:+918849304101"><PhoneCall size={18} /> +91 88493 04101</a>
+          <a href="tel:+919959590524"><PhoneCall size={18} /> +91 99595 90524</a>
         </div>
       </section>
     </main>

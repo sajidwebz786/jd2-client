@@ -207,9 +207,9 @@ export default function Home() {
               Contact Us <ArrowRight size={17} />
             </Link>
 
-            <a href="tel:+918849304101">
+            <a href="tel:+919959590524">
               <Phone size={18} /> <span>Call for help</span>
-              <strong>+91 88493 04101</strong>
+              <strong>+91 99595 90524</strong>
             </a>
           </div>
         </div>
